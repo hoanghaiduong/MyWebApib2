@@ -8,21 +8,21 @@ namespace MyWebApi.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class RoomTypeController : ControllerBase
+    public class UserController : ControllerBase
     {
-        private readonly IRoomTypeService _roomTypeService;
+        private readonly IUserService _userService;
 
-        public RoomTypeController(IRoomTypeService roomTypeService)
+        public UserController(IUserService userService)
         {
-            _roomTypeService = roomTypeService;
+            _userService = userService;
         }
 
         [HttpPost]
-        public async Task<IResult> CreateRoomType([FromBody] CreateRoomTypeDTO dto)
+        public async Task<IResult> CreateUser([FromBody] CreateUserDTO dto)
         {
             try
             {
-                var created = await _roomTypeService.CreateRoomType(dto);
+                var created = await _userService.CreateUser(dto);
                 if (created == null) return Results.BadRequest();
                 return Results.Ok(new { created });
             }
@@ -33,12 +33,12 @@ namespace MyWebApi.Controllers
         }
 
 
-        [HttpPut]
-        public async Task<IResult> UpdateRoomType([FromBody] UpdateRoomTypeDTO dto)
+        [HttpPut("{id}")]
+        public async Task<IResult> UpdateUser(int id,[FromBody] UpdateUserDTO dto)
         {
             try
             {
-                var updated = await _roomTypeService.UpdateRoomType(dto);
+                var updated = await _userService.UpdateUser(id,dto);
                 if (updated == null) return Results.BadRequest();
                 return Results.Ok(new { updated });
             }
@@ -48,11 +48,11 @@ namespace MyWebApi.Controllers
             }
         }
         [HttpDelete("{id}")]
-        public async Task<IResult> DeleteRoomType([FromRoute] int id)
+        public async Task<IResult> DeleteUser([FromRoute] int id)
         {
             try
             {
-                var deleted = await _roomTypeService.DeleteRoomType(id);
+                var deleted = await _userService.DeleteUser(id);
                 if (deleted != -1) return Results.BadRequest();
                 return Results.Ok(new { message = $"Xoá loại phòng với {id} thành công" });
             }
@@ -62,11 +62,11 @@ namespace MyWebApi.Controllers
             }
         }
         [HttpGet]
-        public async Task<IResult> GetRoomTypes()
+        public async Task<IResult> GetUsers()
         {
             try
             {
-                var results = await _roomTypeService.GetRoomTypes();
+                var results = await _userService.GetUsers();
                 return Results.Ok(new { results });
             }
             catch (Exception ex)
@@ -75,18 +75,17 @@ namespace MyWebApi.Controllers
             }
         }
         [HttpGet("{id}")]
-        public async Task<IResult> GetRoomType([FromRoute] int id)
+        public async Task<IResult> GetUser([FromRoute] int id)
         {
             try
             {
-                var roomType = await _roomTypeService.GetRoomTypeById(id);
-                return Results.Ok(new { roomType });
+                var User = await _userService.GetUserById(id);
+                return Results.Ok(new { User });
             }
             catch (Exception ex)
             {
                 return Results.BadRequest(new { ex.Message });
             }
         }
-
     }
 }

@@ -4,7 +4,7 @@ using MyWebApi.Domain.Entities;
 
 namespace MyWebApi.Application.DTO.Creates
 {
-    public class CreateRoomTypeDTO : RoomType
+    public class CreateUserDTO : UserDTO
     {
         [JsonIgnore]
         public new int Id { get; set; }
