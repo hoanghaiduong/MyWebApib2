@@ -15,7 +15,9 @@ public class Program
         // Add services to the container.
         builder.Services.AddScoped<IDbConnection>(cnn => new SqlConnection(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-        builder.Services.AddScoped<IUserService,UserService>();
+        builder.Services.AddScoped<IUserService, UserService>();
+        builder.Services.AddScoped<IHotelService, HotelService>();
+        builder.Services.AddScoped<IRoomTypeSerivce, RoomTypeService>();
         builder.Services.AddAuthorization();
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen();
