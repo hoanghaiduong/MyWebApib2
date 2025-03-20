@@ -1,5 +1,6 @@
 
 using Microsoft.AspNetCore.Mvc;
+using MyWebApi.Application.DTO;
 using MyWebApi.Application.DTO.Creates;
 using MyWebApi.Application.DTO.Updates;
 using MyWebApi.Application.Interfaces;
@@ -16,7 +17,18 @@ namespace MyWebApi.Controllers
         {
             _userService = userService;
         }
-
+        [HttpPost("assign-role")]
+        public async Task<IActionResult> AssignRoleToUser([FromBody] UserRolesDTO dto)
+        {
+            var result = await _userService.AssignRoleToUser(dto);
+            return Ok(result);
+        }
+        [HttpPost("assign-roles")]
+        public async Task<IActionResult> AssignRolesToUser([FromBody] RolesToUser dto)
+        {
+            var result = await _userService.AssignRolesToUser(dto);
+            return Ok(result);
+        }
         [HttpPost]
         public async Task<IResult> CreateUser([FromBody] CreateUserDTO dto)
         {
@@ -34,11 +46,11 @@ namespace MyWebApi.Controllers
 
 
         [HttpPut("{id}")]
-        public async Task<IResult> UpdateUser(int id,[FromBody] UpdateUserDTO dto)
+        public async Task<IResult> UpdateUser(int id, [FromBody] UpdateUserDTO dto)
         {
             try
             {
-                var updated = await _userService.UpdateUser(id,dto);
+                var updated = await _userService.UpdateUser(id, dto);
                 if (updated == null) return Results.BadRequest();
                 return Results.Ok(new { updated });
             }
@@ -75,11 +87,11 @@ namespace MyWebApi.Controllers
             }
         }
         [HttpGet("{id}")]
-        public async Task<IResult> GetUser([FromRoute] int id)
+        public async Task<IResult> GetUser([FromRoute] int id, [FromQuery] int depth = 0)
         {
             try
             {
-                var User = await _userService.GetUserById(id);
+                var User = await _userService.GetUserById(id, depth);
                 return Results.Ok(new { User });
             }
             catch (Exception ex)

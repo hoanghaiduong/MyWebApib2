@@ -10,11 +10,20 @@ namespace MyWebApi.Application.DTO
 {
     public class UserDTO
     {
-        public int Id { get; set; }
-       
-        public string UserName { get; set; }
+        public int? HotelId { get; set; }
         public string? Email { get; set; }
         [JsonIgnore]
-        public DateTime CreatedAt { get; set; }
+        public string? Password { get; set; }
+        public string? FullName { get; set; }
+        public string? Address { get; set; }
+        public string? Phone { get; set; }
+        public string? PhoneNumber { get; set; }
+        public DateTime? DateOfBirth { get; set; }
+        public string? Avatar { get; set; }
+        public string? RefreshToken { get; set; }
+        public bool? IsDisabled { get; set; }
+        public bool? EmailVerified { get; set; }
+        public bool? Gender { get; set; }
+        public DateTime? LastLogin { get; set; }
     }
 }

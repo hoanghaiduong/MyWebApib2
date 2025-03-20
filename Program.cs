@@ -18,6 +18,7 @@ public class Program
         builder.Services.AddScoped<IUserService, UserService>();
         builder.Services.AddScoped<IHotelService, HotelService>();
         builder.Services.AddScoped<IRoomTypeSerivce, RoomTypeService>();
+        builder.Services.AddScoped<IAuthService, AuthService>();
         builder.Services.AddAuthorization();
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen();

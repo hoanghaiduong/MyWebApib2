@@ -3,17 +3,29 @@
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
+
 namespace MyWebApi.Domain.Entities
 {
     public class User : BaseEntity<int>
     {
-       
-        public string UserName { get; set; }
         public string? Email { get; set; }
         [JsonIgnore]
-        public DateTime CreatedAt { get; set; }
-        // Navigation property 
-        
-        public UserProfile? Profile { get; set; }
+        public string? Password { get; set; }
+        public string? FullName { get; set; }
+        public string? PhoneNumber { get; set; }
+        public string? Address { get; set; }
+        public string? Phone { get; set; }
+        public DateTime? DateOfBirth { get; set; }
+        public string? Avatar { get; set; }
+        public string? RefreshToken { get; set; }
+        public bool? IsDisabled { get; set; }
+        public bool? EmailVerified { get; set; }
+        public bool? Gender { get; set; }
+        public DateTime? LastLogin { get; set; }
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public Hotel? Hotel { get; set; }
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        // public int RoleId { get; set; }
+        public virtual List<Role>? Roles { get; set; }
     }
 }
