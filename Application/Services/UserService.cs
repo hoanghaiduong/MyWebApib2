@@ -113,7 +113,7 @@ namespace MyWebApi.Application.Services
 
         }
 
-      
+
         public async Task<int> DeleteUser(int id)
         {
             var parameters = new DynamicParameters();
@@ -146,12 +146,39 @@ namespace MyWebApi.Application.Services
 
         public async Task<User> UpdateUser(int id, UpdateUserDTO dto)
         {
-            var parameters = new DynamicParameters();
-            parameters.Add("@Id", id);
-            // parameters.Add("@Name", dto.UserName);
-            parameters.Add("@Email", dto.Email);
-            var result = await _db.QueryFirstOrDefaultAsync<User>("UpdateUser", parameters, commandType: CommandType.StoredProcedure);
-            return result!;
+            var avatar = string.Empty;
+            try
+            {
+                var currentUser = await GetUserById(id, 0) ?? throw new Exception();//PATH
+
+                var parameters = new DynamicParameters();
+                parameters.Add("@Id", id);
+                parameters.Add("@Address", dto.Address);
+                parameters.Add("@DateOfBirth", dto.DateOfBirth);
+                parameters.Add("@PhoneNumber", dto.PhoneNumber);
+                parameters.Add("@FullName", dto.FullName);
+                parameters.Add("@EmailVerified", dto.EmailVerified ?? false);
+                if (dto.Avatar is not null)
+                {
+                    _fileUploadService.DeleteSingleFile(currentUser.Avatar!);
+                    avatar = await _fileUploadService.UploadSingleFile(["uploads", "users"], dto.Avatar);
+                    parameters.Add("@Avatar", avatar);
+                }
+                parameters.Add("@IsDisabled", dto.IsDisabled ?? false);
+                parameters.Add("@LastLogin", dto.LastLogin);
+                parameters.Add("@HotelId", dto.HotelId);
+                var result = await _db.QueryFirstOrDefaultAsync<User>("Users_Update", parameters, commandType: CommandType.StoredProcedure);
+                return result!;
+
+            }
+            catch (System.Exception ex)
+            {
+                if (!string.IsNullOrEmpty(avatar))
+                {
+                    _fileUploadService.DeleteSingleFile(avatar);
+                }
+                throw;
+            }
         }
     }
 }

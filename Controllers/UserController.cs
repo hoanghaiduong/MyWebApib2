@@ -46,7 +46,7 @@ namespace MyWebApi.Controllers
 
 
         [HttpPut("{id}")]
-        public async Task<IResult> UpdateUser(int id, [FromBody] UpdateUserDTO dto)
+        public async Task<IResult> UpdateUser(int id, [FromForm] UpdateUserDTO dto)
         {
             try
             {

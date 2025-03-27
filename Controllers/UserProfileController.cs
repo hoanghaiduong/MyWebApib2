@@ -19,11 +19,6 @@ namespace MyWebApi.Controllers
             _userService = userService;
         }
 
-        [HttpPost]
-        public async Task<IActionResult> CreateProfileToUser([FromBody] CreateUserProfileDTO dto)
-        {
-          var result = await _userService.CreateUserProfile(dto);
-          return result==null? BadRequest(): Ok(new {result});
-        }
+     
     }
 }
