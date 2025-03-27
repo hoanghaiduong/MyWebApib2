@@ -19,13 +19,12 @@ public class Program
 
         // Add services to the container.
         builder.Services.AddScoped<IDbConnection>(cnn => new SqlConnection(builder.Configuration.GetConnectionString("DefaultConnection")));
-        builder.Services.Configure<AppSettings>(builder.Configuration.GetSection("AppSettings"));
 
         builder.Services.AddScoped<IUserService, UserService>();
         builder.Services.AddScoped<IHotelService, HotelService>();
         builder.Services.AddScoped<IRoomTypeSerivce, RoomTypeService>();
         builder.Services.AddScoped<IAuthService, AuthService>();
-
+        builder.Services.AddScoped<IFileUploadService, FileUploadService>();
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen();
 
@@ -41,9 +40,9 @@ public class Program
         }
 
         app.UseHttpsRedirection();
-
-
         app.UseAuthorization();
+
+        app.UseStaticFiles();
 
         app.MapControllers();
         app.Run();

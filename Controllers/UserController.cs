@@ -30,7 +30,7 @@ namespace MyWebApi.Controllers
             return Ok(result);
         }
         [HttpPost]
-        public async Task<IResult> CreateUser([FromBody] CreateUserDTO dto)
+        public async Task<IResult> CreateUser([FromForm] CreateUserDTO dto)
         {
             try
             {

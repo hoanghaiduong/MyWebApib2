@@ -10,12 +10,12 @@ namespace MyWebApi.Application.Interfaces
     public interface IUserService
     {
         Task<User> AssignRoleToUser(UserRolesDTO dto);
-         Task<User> AssignRolesToUser(RolesToUser dto);
-        Task<User> CreateUserProfile(CreateUserProfileDTO dto);
+        Task<User> AssignRolesToUser(RolesToUser dto);
+
         Task<User> CreateUser(CreateUserDTO dto);
-        Task<User> GetUserById(int id,int depth);
+        Task<User> GetUserById(int id, int depth);
         Task<IEnumerable<User>> GetUsers();
-        Task<User> UpdateUser(int id,UpdateUserDTO dto);
+        Task<User> UpdateUser(int id, UpdateUserDTO dto);
         Task<int> DeleteUser(int id);
     }
 }

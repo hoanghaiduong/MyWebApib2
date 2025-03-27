@@ -19,11 +19,11 @@ namespace MyWebApi.Application.DTO
         public string? Phone { get; set; }
         public string? PhoneNumber { get; set; }
         public DateTime? DateOfBirth { get; set; }
-        public string? Avatar { get; set; }
+        public IFormFile? Avatar { get; set; }
         public string? RefreshToken { get; set; }
-        public bool? IsDisabled { get; set; }
-        public bool? EmailVerified { get; set; }
-        public bool? Gender { get; set; }
+        public bool? IsDisabled { get; set; } = false;
+        public bool? EmailVerified { get; set; } = false;
+        public bool? Gender { get; set; } = false;
         public DateTime? LastLogin { get; set; }
     }
 }

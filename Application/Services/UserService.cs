@@ -13,10 +13,11 @@ namespace MyWebApi.Application.Services
     public class UserService : IUserService
     {
         private readonly IDbConnection _db;
-
-        public UserService(IDbConnection db)
+        private readonly IFileUploadService _fileUploadService;
+        public UserService(IDbConnection db, IFileUploadService fileUploadService)
         {
             _db = db;
+            _fileUploadService = fileUploadService;
         }
 
         public async Task<User> AssignRoleToUser(UserRolesDTO dto)
@@ -74,40 +75,45 @@ namespace MyWebApi.Application.Services
 
         public async Task<User> CreateUser(CreateUserDTO dto)
         {
-            var parameters = new DynamicParameters();
-            parameters.Add("@Email", dto.Email);
-            parameters.Add("@Password", dto.Password); // Cần mã hóa trước khi lưu vào DB
-            parameters.Add("@Address", dto.Address);
-            parameters.Add("@DateOfBirth", dto.DateOfBirth);
-            parameters.Add("@PhoneNumber", dto.PhoneNumber);
-            parameters.Add("@FullName", dto.FullName);
-            parameters.Add("@EmailVerified", dto.EmailVerified);
-            parameters.Add("@Avatar", dto.Avatar);
-            parameters.Add("@RefreshToken", dto.RefreshToken);
-            parameters.Add("@IsDisabled", dto.IsDisabled);
-            parameters.Add("@LastLogin", dto.LastLogin);
-            parameters.Add("@HotelId", dto.HotelId);
-            parameters.Add("@CreatedAt", DateTime.UtcNow); // Lấy thời gian hiện tại nếu không có giá trị
-            parameters.Add("@UpdatedAt", DateTime.UtcNow);
 
-            var result = await _db.QueryFirstOrDefaultAsync<User>("Users_Create", parameters, commandType: CommandType.StoredProcedure);
-            return result!;
+            var avatar = string.Empty;
+            try
+            {
+                if (dto.Avatar != null)
+                {
+                    avatar = await _fileUploadService.UploadSingleFile(["uploads", "users"], dto.Avatar);
+                }
+                var parameters = new DynamicParameters();
+                parameters.Add("@Email", dto.Email);
+                parameters.Add("@Password", dto.Password); // Cần mã hóa trước khi lưu vào DB
+                parameters.Add("@Address", dto.Address);
+                parameters.Add("@DateOfBirth", dto.DateOfBirth);
+                parameters.Add("@PhoneNumber", dto.PhoneNumber);
+                parameters.Add("@FullName", dto.FullName);
+                parameters.Add("@EmailVerified", dto.EmailVerified ?? false);
+                parameters.Add("@Avatar", avatar);
+                parameters.Add("@RefreshToken", dto.RefreshToken);
+                parameters.Add("@IsDisabled", dto.IsDisabled ?? false);
+                parameters.Add("@LastLogin", dto.LastLogin);
+                parameters.Add("@HotelId", dto.HotelId);
+                parameters.Add("@CreatedAt", DateTime.UtcNow); // Lấy thời gian hiện tại nếu không có giá trị
+                parameters.Add("@UpdatedAt", DateTime.UtcNow);
+
+                var result = await _db.QueryFirstOrDefaultAsync<User>("Users_Create", parameters, commandType: CommandType.StoredProcedure);
+                return result!;
+            }
+            catch (Exception)
+            {
+                if (!string.IsNullOrEmpty(avatar))
+                {
+                    _fileUploadService.DeleteSingleFile(avatar);
+                }
+                throw;
+            }
+
         }
 
-        public async Task<User> CreateUserProfile(CreateUserProfileDTO dto)
-        {
-            return null;
-            // var parameters = new DynamicParameters();
-
-            // using var mutil = await _db.QueryMultipleAsync("CreateUserProfile", parameters, commandType: CommandType.StoredProcedure);
-            // //user && user profile
-            // // var result = await _db.QueryFirstOrDefaultAsync<User>("CreateUserProfile", parameters, commandType: CommandType.StoredProcedure);//inner join 
-            // var user = await mutil.ReadSingleOrDefaultAsync<User>();
-            // var profile=await mutil.ReadSingleOrDefaultAsync<UserProfile>();
-            // user.Profile=profile;
-            // return user;
-        }
-
+      
         public async Task<int> DeleteUser(int id)
         {
             var parameters = new DynamicParameters();
