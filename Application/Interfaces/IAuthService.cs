@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using MyWebApi.Application.DTO;
 using MyWebApi.Domain.Entities;
+using MyWebApi.Infrastructure.Models;
 
 namespace MyWebApi.Application.Interfaces
 {
@@ -11,5 +12,6 @@ namespace MyWebApi.Application.Interfaces
     {
         Task<User> SignUp(AuthDTO dto);
         Task<User> SignIn(AuthDTO dto);
+       
     }
 }
