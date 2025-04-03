@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "l7sFgBrjzZdTrOGKFVQcJcAQnLD73DZmwgT4UxDNBj8=",
+  "Hash": "iEyPFGWWCKKAJ1WzW2x8jOz+r+tT7dgv4xn00Nn4PCg=",
   "Source": "MyWebApi",
   "BasePath": "_content/MyWebApi",
   "Mode": "Default",
@@ -15,5 +15,25 @@
       "Pattern": "**"
     }
   ],
-  "Assets": []
+  "Assets": [
+    {
+      "Identity": "C:\\Users\\LH COMPUTER\\Desktop\\TrainningBackend\\MyWebApi\\wwwroot\\uploads\\users\\26578169-7079-42cd-8d9f-c8158045e199_z5087990911711_e4a96691fc7dc63cea64f974642bdf36.jpg",
+      "SourceId": "MyWebApi",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Users\\LH COMPUTER\\Desktop\\TrainningBackend\\MyWebApi\\wwwroot\\",
+      "BasePath": "_content/MyWebApi",
+      "RelativePath": "uploads/users/26578169-7079-42cd-8d9f-c8158045e199_z5087990911711_e4a96691fc7dc63cea64f974642bdf36.jpg",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "PreferTarget",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\uploads\\users\\26578169-7079-42cd-8d9f-c8158045e199_z5087990911711_e4a96691fc7dc63cea64f974642bdf36.jpg"
+    }
+  ]
 }

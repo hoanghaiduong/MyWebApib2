@@ -15,15 +15,48 @@ namespace MyWebApi.Application.Services
     public class AuthService : IAuthService
     {
         private readonly IDbConnection _db;
-        public AuthService(IDbConnection db)
+        private readonly IJwtService _jwtService;
+        public AuthService(IDbConnection db, IJwtService jwtService)
         {
             _db = db;
+            _jwtService = jwtService;
+        }
+
+        public TokenModel RefreshToken(string accessToken)
+        {
+
+            ClaimsPrincipal principal;
+            try
+            {
+                principal = _jwtService.GetPrincipalFromExpiredToken(accessToken);//bỏ qua thời gian sống
+                var newAccessToken = _jwtService.GenerateAccessToken(principal.Claims);//đưa claims mã hoá lại
+                var newRefreshToken = _jwtService.GenerateRefreshToken();
+                var tokenModel = new TokenModel(newAccessToken, newRefreshToken);
+                return tokenModel;
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+
 
         }
 
-        
 
-        public async Task<User> SignIn(AuthDTO dto)
+        /*
+
+        user:{
+            email:'',
+            password:'',
+            ...
+        },
+        token:{
+            accessToken:'',
+            refreshToken:''
+        }
+
+        */
+        public async Task<(User, TokenModel)> SignIn(AuthDTO dto)
         {
             try
             {
@@ -35,8 +68,22 @@ namespace MyWebApi.Application.Services
                 var user = await multi.ReadSingleAsync<User>();
                 var roles = (await multi.ReadAsync<Role>()).ToList();
                 user.Roles = roles;
-             
-                return user;
+
+                //tạo token
+                // Tạo danh sách claims cần thiết
+                var claims = new List<Claim>{
+                    new Claim(ClaimTypes.NameIdentifier,user.Id.ToString()),
+                    new Claim(ClaimTypes.Email,user.Email)
+                };
+                foreach (var item in roles)
+                {
+                    claims.Add(new Claim(ClaimTypes.Role, item.Name));
+                }
+
+                var accessToken = _jwtService.GenerateAccessToken(claims);
+                var refreshToken = _jwtService.GenerateRefreshToken();
+                var tokenModel = new TokenModel(accessToken, refreshToken);
+                return (user, tokenModel);
             }
             catch (System.Exception ex)
             {

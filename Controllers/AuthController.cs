@@ -23,7 +23,46 @@ namespace MyWebApi.Controllers
             _authService = authService;
         }
 
+        [HttpPost("profile"), Authorize]
+        public async Task<IActionResult> GetUser()
+        {
+            //Unauthorize
+            try
+            {
+                var id = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                var email = User.FindFirstValue(ClaimTypes.Email);
+                var roleClaims = User.Claims
+                                            .Where(c => c.Type == ClaimTypes.Role)
+                                            .Select(c => c.Value)
+                                            .ToList();
+                return Ok(new
+                {
+                    id,
+                    email,
+                    roleClaims
+                });
+            }
+            catch (System.Exception ex)
+            {
+                return BadRequest(new { ex.Message });
+            }
+        }
 
+        [HttpPost("refresh-token")]
+        public async Task<IActionResult> RefreshToken()
+        {
+            try
+            {
+                var accessToken = Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
+                var result = _authService.RefreshToken(accessToken);
+                return Ok(result);
+            }
+            catch (System.Exception)
+            {
+
+                throw;
+            }
+        }
         [HttpPost("sign-up")]
         public async Task<IActionResult> SignUp([FromBody] AuthDTO dto)
         {
@@ -34,7 +73,11 @@ namespace MyWebApi.Controllers
         public async Task<IActionResult> SignIn([FromBody] AuthDTO dto)
         {
             var authResult = await _authService.SignIn(dto);
-            return Ok(new { authResult });
+            return Ok(new
+            {
+                user = authResult.Item1,
+                authResult.Item2
+            });
         }
     }
 }

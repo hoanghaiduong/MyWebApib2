@@ -11,7 +11,7 @@ namespace MyWebApi.Application.Interfaces
     public interface IAuthService
     {
         Task<User> SignUp(AuthDTO dto);
-        Task<User> SignIn(AuthDTO dto);
-       
+        Task<(User,TokenModel)> SignIn(AuthDTO dto);
+        TokenModel RefreshToken(string accessToken);
     }
 }
