@@ -22,7 +22,11 @@ namespace MyWebApi.Controllers
         {
             _authService = authService;
         }
-
+        [HttpGet("test")]
+        public async Task<IActionResult> Test()
+        {
+            return Ok(new { message = "ok" });
+        }
         [HttpPost("profile"), Authorize]
         public async Task<IActionResult> GetUser()
         {
@@ -59,7 +63,6 @@ namespace MyWebApi.Controllers
             }
             catch (System.Exception)
             {
-
                 throw;
             }
         }

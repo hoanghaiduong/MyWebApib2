@@ -2,13 +2,16 @@ using System.Data;
 using System.Text;
 using Dapper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using MyWebApi.Application.Interfaces;
+using MyWebApi.Application.Middlewares;
 using MyWebApi.Application.Services;
 using MyWebApi.Infrastructure.Models;
+using Newtonsoft.Json;
 namespace MyWebApi;
 
 public class Program
@@ -16,7 +19,18 @@ public class Program
     public static void Main(string[] args)
     {
         var builder = WebApplication.CreateBuilder(args);
+        var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
+        // builder.Services.AddCors(options =>
+        // {
+        //     options.AddPolicy(name: MyAllowSpecificOrigins,
+        //                     policy =>
+        //                     {
 
+        //                         policy.AllowAnyOrigin()//access control allow origin
+        //                             .AllowAnyMethod()//GET POST PUT DELETE
+        //                             .AllowAnyHeader();//access control allow header
+        //                     });
+        // });
 
         builder.Services.Configure<AppSettings>(builder.Configuration.GetSection("AppSettings"));
         //jwt config
@@ -29,6 +43,11 @@ public class Program
 
 
         builder.Services.AddScoped<IDbConnection>(cnn => new SqlConnection(builder.Configuration.GetConnectionString("DefaultConnection")));
+        builder.Services.AddStackExchangeRedisCache(c =>
+        {
+            c.Configuration = builder.Configuration.GetConnectionString("Redis") ?? "localhost:6379";
+            c.InstanceName = "MyWebApi_";
+        });
         builder.Services.AddScoped<IJwtService, JwtService>();
         builder.Services.AddScoped<IUserService, UserService>();
         builder.Services.AddScoped<IHotelService, HotelService>();
@@ -36,7 +55,7 @@ public class Program
 
         builder.Services.AddScoped<IAuthService, AuthService>();
         builder.Services.AddScoped<IFileUploadService, FileUploadService>();
-
+        builder.Services.AddScoped<IRedisCacheService, RedisCacheService>();
         builder.Services.AddEndpointsApiExplorer();
         //thêm security cho swagger
         builder.Services.AddSwaggerGen((config) =>
@@ -85,10 +104,24 @@ public class Program
             };
         });
         builder.Services.AddAuthorization();
-        //add authentication b7
+
 
         builder.Services.AddControllers();
         var app = builder.Build();
+        app.UseExceptionHandler(appBuilder =>
+        {
+            appBuilder.Run(async context =>
+            {
+                context.Response.StatusCode = 500;
+                context.Response.ContentType = "application/json";
+                var errorFeature = context.Features.Get<IExceptionHandlerFeature>();
+                if (errorFeature != null)
+                {
+                    var errorResponse = new { Message = "Đã xảy ra lỗi", Detail = errorFeature.Error.Message };
+                    await context.Response.WriteAsync(JsonConvert.SerializeObject(errorResponse));
+                }
+            });
+        });
 
         // Configure the HTTP request pipeline.
         if (app.Environment.IsDevelopment())
